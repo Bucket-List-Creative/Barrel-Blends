@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+._*
+.vscode/
+
+# Original photography and video. These are the camera-resolution masters
+# (4-13MB per JPG, ~35MB per MP4). The web-sized copies that the page
+# actually serves are committed under assets/img/ instead. Keep the
+# originals in cloud storage, not in the repo.
+Media/

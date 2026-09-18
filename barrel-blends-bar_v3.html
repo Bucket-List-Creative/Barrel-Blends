@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Bar at Barrel Blends | Valley Park · Southside · Affton</title>
+<meta name="description" content="The Bar at Barrel Blends: craft cocktails, wine by the glass, whiskey, agave, rum and draft beer poured inside our St. Louis shops. A neighborhood bar built for discovering something new. Walk-ins welcome at Valley Park, Southside & Affton." />
+
+<!-- ══════════════════════════════════════════════════════════════════
+     TEAM EDIT ZONE - the only things anyone should ever need to change.
+     Search this file for the marker in [brackets] to find each one.
+
+     [PHOTO-SS]  Southside bar photo
+     [PHOTO-AF]  Affton bar photo
+     [EVENTS]    Full events calendar link
+     [PRIVATE]   Private & group events page link
+
+     ── PHOTOGRAPHY ────────────────────────────────────────────────
+     All three location photos are real and live in assets/img/.
+     They are web-sized copies (1500-1800px, ~300KB) of the originals
+     in Media/, which stays out of git - the raw files are 4-13MB each
+     and the two .mp4s are ~35MB, far too heavy to serve from Pages.
+
+     To re-cut any of them after replacing an original, the command is:
+       sips -Z 1800 -s format jpeg -s formatOptions 60 \
+            "Media/<file>.jpg" --out "assets/img/<name>.jpg"
+
+     The hero panels crop centre-out to a tall box, so each one sets
+     object-position to keep the building rather than the sky. Adjust
+     that percentage if a replacement photo sits differently.
+
+     ── EVENTS: THIS SECTION UPDATES ITSELF ────────────────────────
+     The "What's Coming Up" cards are pulled live from the same
+     CityHive feed that powers barrelblends.com/events. Add or edit
+     an event in the CityHive admin and this page follows within one
+     page load. Nobody edits this file to change an event.
+
+     The feed only allows requests coming from https://barrelblends.com,
+     so the live pull works once this page is hosted on the real domain.
+     Opening this file locally (or on a staging domain) falls back to
+     the hard-coded cards below the script, which is why they exist.
+     Those fallback cards are a safety net, not the source of truth.
+     ══════════════════════════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Heebo is the typeface the live barrelblends.com theme loads. -->
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   BARREL BLENDS LIGHT DESIGN SYSTEM
+   Matched to the live barrelblends.com (CityHive) theme:
+     --ch-background  #FFFFFF   page white
+     --ch-header      #F6F6F6   alternating band
+     --ch-primary     #000000   body copy
+     --ch-alt-main    #4E1967   brand purple (primary action)
+     --ch-merchant-name-color #777777  muted text
+     font             Heebo
+   Everything below is token-driven: change the :root block
+   and the whole page re-skins.
+
+   TWO CONTEXTS: most of the page is dark-on-white, but the hero,
+   the offer cards and the private-events band put text over
+   photography. Those use --cream / --on-photo. Everything on a
+   white surface uses --heading / --text / --text-soft.
+   ============================================================ */
+
+:root{
+  /* ---- Brand core ---- */
+  --plum-900:#2A0D38;
+  --plum-800:#3A1150;
+  --plum-700:#4E1967;   /* ← official brand purple, = --ch-alt-main */
+  --plum-600:#632582;
+  --plum-500:#7B3FA0;
+  --plum-300:#A97BC7;
+  --plum-100:#E6D6F0;
+  --plum-050:#F5EFF9;   /* faint tint band */
+
+  /* ---- Extended palette, darkened where it must read on white ---- */
+  --gold-700:#8A6A12;  /* gold that passes contrast as text on white */
+  --gold-500:#C9A227;  /* decorative fills only */
+  --gold-400:#E3C567;  /* on photography only */
+  --gold-200:#F2E2A8;
+  --copper:#9C5F26;
+  --wine:#7A1F3D;      /* bordeaux, for wine cues */
+  --amber:#A85F1E;     /* whiskey cues */
+  --hop:#4C6638;       /* beer / draft cues */
+  --agave:#356B5C;     /* agave cues */
+  --cocktail:#B03354;  /* craft + seasonal cocktail cues */
+  --open:#1E7A44;      /* "open now" green, legible on white */
+
+  /* ---- Neutrals / surfaces ---- */
+  --ink:#14101A;       /* darkest band (hero scrim) */
+  --surface-0:#FFFFFF; /* page */
+  --surface-1:#F6F6F6; /* alternating section band */
+  --surface-2:#FFFFFF; /* cards */
+  --surface-3:#EFEFF1; /* subtle fills */
+  --line:rgba(20,16,26,.11);
+  --line-strong:rgba(20,16,26,.20);
+
+  /* ---- Type colors ---- */
+  --heading:#14101A;   /* headings on white */
+  --text:#221D2A;      /* body on white */
+  --text-soft:#4C4655;
+  /* The live theme's muted grey is #777777, but that lands at 4.48:1 on white -
+     just under AA for the small captions it's used on here. Nudged one step
+     darker; visually near-identical, and it passes on the #F6F6F6 band too. */
+  --text-mute:#6A6A6A;
+  --cream:#F7F2EA;     /* headings over photography */
+  --on-photo:#EFE8F2;  /* body copy over photography */
+
+  /* ---- Type ---- */
+  --font-display:'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-ui:'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --fs-hero:clamp(2.9rem, 7.2vw, 6.2rem);
+  --fs-h2:clamp(2rem, 4.2vw, 3.4rem);
+  --fs-h3:clamp(1.35rem, 2.1vw, 1.75rem);
+  --fs-body:clamp(.98rem, 1.05vw, 1.06rem);
+  --fs-small:.82rem;
+  --tracking-eyebrow:.32em;
+
+  /* ---- Space / shape / motion ---- */
+  --pad-x:clamp(1.25rem, 5vw, 5.5rem);
+  --maxw:1280px;
+  --r-sm:8px;
+  --r-md:14px;
+  --r-lg:22px;
+  --r-pill:999px;
+  --shadow-sm:0 1px 3px rgba(20,16,26,.08);
+  --shadow-md:0 12px 30px -14px rgba(20,16,26,.22);
+  --shadow-lg:0 28px 60px -26px rgba(20,16,26,.30);
+  --glow:0 0 0 1px rgba(78,25,103,.22), 0 20px 46px -22px rgba(78,25,103,.38);
+  --ease:cubic-bezier(.22,.85,.3,1);
+  --dur:.5s;
+
+  --grad-plum:linear-gradient(135deg,var(--plum-800) 0%,var(--plum-700) 45%,var(--plum-500) 100%);
+  --grad-gold:linear-gradient(100deg,var(--gold-500) 0%,var(--gold-200) 45%,var(--copper) 100%);
+  --grad-fade:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.65) 55%,var(--surface-0) 100%);
+}
+
+/* Graceful fallback: if a photo fails to load, the container still reads
+   as an intentional surface rather than a broken box. */
+.bar-panel,.offer .ph,.gcell,.event .ph,.split-media .frame,.reserve{
+  background-image:
+    radial-gradient(120% 120% at 20% 10%, rgba(78,25,103,.16), transparent 62%),
+    linear-gradient(150deg,var(--surface-3),#E4E4E8);
+  background-size:cover;
+}
+
+/* ============================ RESET ============================ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--surface-0);
+  color:var(--text);
+  font-family:var(--font-ui);
+  font-size:var(--fs-body);
+  line-height:1.7;
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* Temporarily commented out from the page layout: header/nav and footer.
+   Keep their markup in place so they can be restored without rebuilding it. */
+#header,#drawer,#scrim,#footer{display:none!important}
+
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+h1,h2,h3,h4{margin:0;font-family:var(--font-display);font-weight:600;line-height:1.1;letter-spacing:-.025em}
+p{margin:0 0 1.1em}
+::selection{background:var(--plum-100);color:var(--plum-900)}
+
+/* The dark theme's ambient grain would read as dirt on a white page. */
+
+/* ============================ LAYOUT ============================ */
+.wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--pad-x)}
+.section{padding-block:clamp(4.5rem,9vw,8.5rem);position:relative;z-index:2}
+.section--tight{padding-block:clamp(3rem,5vw,4.5rem)}
+
+/* ============================ ATOMS ============================ */
+.eyebrow{
+  font-family:var(--font-ui);font-size:var(--fs-small);font-weight:700;
+  letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;
+  color:var(--plum-600);display:inline-block;margin-bottom:1.1rem;
+}
+.eyebrow::before,.eyebrow::after{content:none}
+
+.lede{color:var(--text-soft);font-size:clamp(1.02rem,1.25vw,1.15rem);line-height:1.85;max-width:62ch}
+.muted{color:var(--text-mute)}
+.gold-text{color:var(--plum-700)}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+  padding:.95rem 1.9rem;border-radius:var(--r-pill);
+  font-size:.82rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  transition:transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  will-change:transform;white-space:nowrap;
+}
+.btn:hover{transform:translateY(-2px)}
+/* Primary action = brand purple, the live site's action colour. */
+.btn--gold{background:var(--plum-700);color:#fff;box-shadow:none}
+.btn--gold:hover{background:var(--plum-600);box-shadow:none}
+/* Secondary = outlined purple on white. */
+.btn--ghost{background:#fff;color:var(--plum-700);box-shadow:inset 0 0 0 1.5px var(--plum-700)}
+.btn--ghost:hover{background:var(--plum-050);color:var(--plum-700)}
+.btn--plum{background:var(--plum-800);color:#fff;box-shadow:none}
+.btn--plum:hover{background:var(--plum-700)}
+.btn--sm{padding:.7rem 1.35rem;font-size:.72rem}
+
+/* On photography / the purple band, invert so the CTA still reads. */
+.hero .btn--ghost,.reserve .btn--ghost{background:transparent;color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.7)}
+.hero .btn--ghost:hover,.reserve .btn--ghost:hover{background:rgba(255,255,255,.14);color:#fff}
+.reserve .btn--gold{background:#fff;color:var(--plum-700)}
+.reserve .btn--gold:hover{background:var(--plum-050);color:var(--plum-800)}
+
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-strong),transparent);border:0;margin:0}
+
+.tag{
+  display:inline-flex;align-items:center;gap:.45rem;padding:.35rem .8rem;border-radius:var(--r-pill);
+  font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  border:0;color:#fff;background:var(--plum-700);
+}
+.tag--wine{background:var(--wine)} .tag--whiskey{background:var(--amber);color:#fff}
+.tag--beer{background:var(--hop)} .tag--agave{background:var(--agave)}
+.tag--cocktail{background:var(--cocktail)}
+.tag i{width:6px;height:6px;border-radius:50%;display:block}
+.tag--wine i{background:var(--wine)} .tag--whiskey i{background:var(--amber)}
+.tag--beer i{background:var(--hop)}  .tag--agave i{background:var(--agave)}
+.tag--cocktail i{background:var(--cocktail)}
+
+/* ============================ TOP STRIP ============================ */
+/* Mirrors the live site: white bar, dark copy, purple "change store" pill. */
+.strip{
+  background:#fff;color:var(--text-soft);font-size:.79rem;position:relative;z-index:60;
+  border-bottom:1px solid var(--line);
+}
+.strip .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:42px;padding-block:.4rem}
+.strip b{font-weight:700;color:var(--heading)}
+.strip-links{display:flex;align-items:center;gap:1.15rem}
+.strip a.pill{
+  background:var(--plum-700);color:#fff;border-radius:var(--r-pill);padding:.22rem .8rem;
+  font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;transition:.35s var(--ease);
+}
+.strip a.pill:hover{background:var(--plum-600);color:#fff}
+.strip .soc{display:inline-flex;gap:.85rem;color:var(--text-mute)}
+.strip .soc svg{width:15px;height:15px;fill:currentColor;transition:.3s}
+.strip .soc a:hover svg{fill:var(--plum-700)}
+
+/* ============================ HEADER / NAV ============================ */
+.header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(18px) saturate(140%);
+  border-bottom:1px solid var(--line);
+  transition:background .4s var(--ease),border-color .4s var(--ease),box-shadow .4s var(--ease);
+}
+.header.is-stuck{background:rgba(255,255,255,.97);border-bottom-color:var(--line-strong);box-shadow:var(--shadow-sm)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;min-height:78px}
+.brand{display:flex;align-items:center;gap:.85rem;flex:0 0 auto}
+.brand img{height:52px;width:auto}
+.brand-word{
+  display:none;font-family:var(--font-display);font-size:1.6rem;letter-spacing:.06em;line-height:1;
+  color:var(--heading);text-transform:uppercase;
+}
+.brand-word small{display:block;font-family:var(--font-ui);font-size:.54rem;letter-spacing:.34em;color:var(--plum-700);margin-top:.35rem}
+.brand.fallback img{display:none}
+.brand.fallback .brand-word{display:block}
+.navlinks{display:flex;align-items:center;gap:.25rem}
+.navlinks > a{
+  position:relative;padding:.6rem .85rem;border-radius:var(--r-sm);
+  font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text);
+  transition:color .3s var(--ease);white-space:nowrap;
+}
+@media (max-width:1240px){ .navlinks > a{padding:.6rem .6rem;font-size:.72rem;letter-spacing:.06em} }
+.navlinks > a::after{
+  content:'';position:absolute;left:.85rem;right:.85rem;bottom:.42rem;height:2px;
+  background:var(--plum-700);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease);
+}
+.navlinks > a:hover{color:var(--plum-700)}
+.navlinks > a:hover::after{transform:scaleX(1)}
+.navlinks > a.active{color:var(--plum-700)}
+.navlinks > a.active::after{transform:scaleX(1)}
+.nav-actions{display:flex;align-items:center;gap:.6rem}
+.view-toggle{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.66rem .85rem;border-radius:var(--r-pill);background:var(--agave);color:#fff;
+  font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;
+  transition:background .3s var(--ease),transform .3s var(--ease);
+}
+.view-toggle:hover{background:#62a390;transform:translateY(-1px)}
+.view-toggle svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;flex:0 0 auto}
+.view-toggle[aria-pressed="true"]{background:var(--wine)}
+
+/* Alternate header preview */
+.header.header--alternate{background:#fff;border-bottom:4px solid var(--plum-700);backdrop-filter:none}
+.header.header--alternate .nav{display:grid;grid-template-columns:1fr auto 1fr;min-height:104px}
+.header.header--alternate .brand{grid-column:2;grid-row:1;justify-self:center}
+.header.header--alternate .navlinks{grid-column:1;grid-row:1;justify-self:start}
+.header.header--alternate .navlinks>a:nth-child(n+5){display:none}
+.header.header--alternate .nav-actions{grid-column:3;grid-row:1;justify-self:end}
+.icon-btn{
+  width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid var(--line-strong);color:var(--text);transition:.35s var(--ease);position:relative;
+}
+.icon-btn:hover{border-color:var(--plum-700);color:var(--plum-700);background:var(--plum-050)}
+.icon-btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.6}
+.icon-btn .dot{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--plum-700);box-shadow:0 0 0 2px #fff}
+.burger{display:none}
+
+/* Mobile drawer */
+.drawer{
+  position:fixed;inset:0 0 0 auto;width:min(86vw,380px);z-index:80;
+  background:#fff;border-left:1px solid var(--line);box-shadow:var(--shadow-lg);
+  transform:translateX(100%);transition:transform .5s var(--ease);
+  padding:1.5rem 1.4rem;display:flex;flex-direction:column;gap:.2rem;overflow-y:auto;
+}
+.drawer.open{transform:none}
+.drawer a{padding:.95rem .4rem;border-bottom:1px solid var(--line);font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text)}
+.drawer a:hover{color:var(--plum-700)}
+.scrim{position:fixed;inset:0;background:rgba(20,16,26,.45);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:.4s;z-index:70}
+.scrim.open{opacity:1;visibility:visible}
+
+/* ============================ HERO ============================ */
+/* Two parts: a light intro band that carries the positioning, then a row of
+   expanding location panels (the barswift.com pattern). At rest each panel
+   shows only its name set vertically; on hover/focus it widens and reveals the
+   address, hours and both CTAs - so the hero itself is the store finder. */
+.hero{position:relative;overflow:hidden}
+
+.hero-intro{
+  padding-block:clamp(2.6rem,5vw,4rem) clamp(1.7rem,3.2vw,2.4rem);
+  text-align:center;max-width:none;
+}
+.hero-intro h1{
+  font-size:clamp(2.3rem,4.7vw,4rem);font-weight:600;letter-spacing:-.03em;
+  color:var(--heading);max-width:19ch;margin-inline:auto;
+}
+.hero-intro h1 em{font-style:normal;color:var(--plum-700)}
+.hero-intro .lede{margin:1.15rem auto 1.35rem;max-width:64ch}
+
+.walkins{
+  display:inline-flex;align-items:center;gap:.85rem;position:relative;
+  padding:.72rem 1.25rem;border-block:1px solid rgba(78,25,103,.28);
+  background:linear-gradient(90deg,transparent,rgba(78,25,103,.055),transparent);
+  font-family:var(--font-display);font-size:.82rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--plum-700);
+}
+
+
+/* ---- Expanding location panels ---- */
+.bar-panels{
+  display:flex;gap:4px;background:var(--line-strong);
+  height:clamp(430px,58vh,610px);
+}
+.bar-panel{
+  position:relative;flex:1 1 0;min-width:0;overflow:hidden;
+  display:flex;align-items:flex-end;
+  transition:flex-grow .65s var(--ease);
+}
+.bar-panel img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:saturate(.9);transition:transform 1.2s var(--ease),filter .6s var(--ease);
+}
+.bar-panel::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(20,16,26,.14) 0%,rgba(20,16,26,.54) 55%,rgba(20,16,26,.90) 100%);
+  transition:background .6s var(--ease);
+}
+.bar-panel:hover,.bar-panel:focus-within{flex-grow:1.9}
+.bar-panel:hover img,.bar-panel:focus-within img{transform:scale(1.05);filter:saturate(1)}
+.bar-panel:hover::after,.bar-panel:focus-within::after{
+  background:linear-gradient(180deg,rgba(20,16,26,.16) 0%,rgba(48,16,64,.48) 46%,rgba(20,16,26,.92) 100%);
+}
+
+/* Resting state: the name only, set vertically. */
+.v-title{
+  position:absolute;left:clamp(.9rem,1.8vw,1.5rem);bottom:clamp(1.3rem,2.6vw,2rem);z-index:2;
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:var(--font-display);font-weight:600;white-space:nowrap;
+  font-size:clamp(1.45rem,2.2vw,2.05rem);letter-spacing:.005em;color:#fff;
+  text-shadow:0 6px 26px rgba(0,0,0,.6);
+  transition:opacity .35s var(--ease),transform .5s var(--ease);
+}
+.bar-panel:hover .v-title,.bar-panel:focus-within .v-title{opacity:0;transform:rotate(180deg) translateY(-16px)}
+
+/* Hover state: the detail a visitor needs to actually drive over. */
+.panel-content{
+  position:relative;z-index:3;width:100%;padding:clamp(1.25rem,1.9vw,1.85rem);
+  opacity:0;transform:translateY(14px);pointer-events:none;
+  transition:opacity .45s var(--ease),transform .55s var(--ease);
+}
+.bar-panel:hover .panel-content,.bar-panel:focus-within .panel-content{opacity:1;transform:none;pointer-events:auto}
+.panel-content h2{font-size:clamp(1.45rem,1.9vw,1.95rem);color:#fff;margin:.45rem 0 .55rem}
+.panel-content address{font-style:normal;font-size:.92rem;line-height:1.55;color:var(--on-photo);margin-bottom:.3rem}
+.panel-hours{font-size:.79rem;color:rgba(239,232,242,.78);margin-bottom:1.05rem}
+.panel-cta{display:flex;flex-wrap:wrap;gap:.5rem}
+.panel-cta .btn{flex:0 1 auto}
+.bar-panel .open-now{color:#7BE0A4}
+.bar-panel .open-now i{background:#7BE0A4;box-shadow:0 0 0 4px rgba(123,224,164,.22)}
+.bar-panel .open-now.is-closed{color:rgba(239,232,242,.75)}
+.bar-panel .open-now.is-closed i{background:rgba(239,232,242,.7);box-shadow:0 0 0 4px rgba(239,232,242,.14)}
+
+/* Touch devices never fire :hover, so show every panel open. */
+@media (hover:none){
+  .bar-panel{flex-grow:1!important}
+  .v-title{display:none}
+  .panel-content{opacity:1;transform:none;pointer-events:auto}
+}
+
+/* ============================ STAT BAND ============================ */
+.stats{background:var(--surface-1);border-block:1px solid var(--line);position:relative;z-index:2}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);}
+.stat{padding:clamp(1.8rem,3vw,2.6rem) 1.2rem;text-align:center;border-right:1px solid var(--line);position:relative}
+.stat:last-child{border-right:0}
+.stat .n{font-family:var(--font-display);font-size:clamp(2.2rem,3.6vw,3.1rem);line-height:1;color:var(--heading)}
+.stat .n span{background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .l{margin-top:.6rem;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-mute)}
+
+/* ============================ SPLIT INTRO ============================ */
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.split-media{position:relative}
+.split-media .frame{
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid var(--line);
+  aspect-ratio:4/5;
+}
+.split-media .frame img{width:100%;height:100%;object-fit:cover}
+.split-media .badge{
+  position:absolute;right:-18px;bottom:34px;background:#fff;border:1px solid var(--line-strong);
+  border-radius:var(--r-md);padding:1.1rem 1.3rem;box-shadow:var(--shadow-md);max-width:230px;
+}
+.split-media .badge .k{font-family:var(--font-display);font-size:1.6rem;color:var(--plum-700);line-height:1}
+.split-media .badge .v{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-mute);margin-top:.35rem}
+.split-media .glow{
+  position:absolute;inset:auto auto -12% -14%;width:60%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,rgba(123,63,160,.20),transparent 65%);filter:blur(30px);z-index:-1;
+}
+
+/* ============================ OFFERINGS ============================ */
+.head{max-width:70ch;margin-bottom:clamp(2.2rem,4vw,3.4rem)}
+.head--center{margin-inline:auto;text-align:center}
+.offers{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(1rem,2vw,1.6rem)}
+/* Light cards: photo on top, copy on white. Each card carries its category
+   colour in --accent (set inline per card), which drives the top rule, the
+   tag, the stat line and the hover border - so the four read as one family
+   while staying instantly distinguishable. */
+.offer{
+  --accent:var(--plum-700);
+  position:relative;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line);
+  background:#fff;display:flex;flex-direction:column;box-shadow:var(--shadow-sm);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .5s var(--ease);
+}
+.offer::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;z-index:3;
+  background:var(--accent);transition:height .4s var(--ease);
+}
+.offer:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);border-color:var(--accent)}
+.offer:hover::before{height:7px}
+
+.offer .ph{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--surface-3)}
+.offer .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+.offer:hover .ph img{transform:scale(1.06)}
+.offer > .tag{
+  width:100%;justify-content:center;padding:.65rem 1rem;border-radius:0;
+  background:var(--accent);box-shadow:none;
+}
+.offer > .tag i{background:rgba(255,255,255,.8)}
+
+.offer-body{padding:1.25rem 1.3rem 1.35rem;display:flex;flex-direction:column;flex:1;gap:.45rem}
+.offer .stat-line{
+  font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);
+}
+.offer h3{font-size:1.24rem;line-height:1.25;margin:0;color:var(--heading)}
+/* Reserve two lines for the title so body copy starts on the same baseline
+   across the row. Dropped at one column, where it would just add dead space. */
+@media (min-width:621px){ .offer h3{min-height:2.5em} }
+.offer p{color:var(--text-soft);font-size:.89rem;line-height:1.62;margin:.15rem 0 0}
+
+/* ============================ DISCOVERY ============================ */
+.menu-panel{
+  background:
+    radial-gradient(90% 60% at 100% 0%, rgba(78,25,103,.06), transparent 60%),
+    var(--surface-1);
+  border-block:1px solid var(--line);
+}
+.menu-note{margin-top:2.2rem;text-align:center;font-size:.84rem;color:var(--text-mute)}
+
+/* The discovery section: rotating selection, a conversation, something new. */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1rem,2.4vw,2.2rem);counter-reset:step}
+.step{
+  position:relative;padding:clamp(1.5rem,2.4vw,2rem);border:1px solid var(--line);
+  border-radius:var(--r-lg);background:#fff;box-shadow:var(--shadow-sm);
+}
+.step::before{
+  counter-increment:step;content:counter(step,decimal-leading-zero);
+  font-family:var(--font-display);font-size:.78rem;font-weight:700;letter-spacing:.24em;
+  color:var(--plum-600);display:block;margin-bottom:1rem;
+}
+.step h3{font-size:1.32rem;color:var(--heading);margin-bottom:.55rem}
+.step p{font-size:.93rem;color:var(--text-soft);margin:0}
+.step:not(:last-child)::after{
+  content:'';position:absolute;top:50%;right:calc(clamp(1rem,2.4vw,2.2rem) / -2 - 5px);
+  width:9px;height:9px;border-right:1.5px solid var(--plum-500);border-top:1.5px solid var(--plum-500);
+  transform:translateY(-50%) rotate(45deg);
+}
+
+/* ============================ GALLERY ============================ */
+.gallery-carousel{position:relative;background:var(--ink)}
+.gallery-track{
+  display:flex;gap:4px;height:clamp(430px,58vh,610px);overflow-x:auto;
+  scroll-behavior:smooth;scroll-snap-type:x mandatory;scrollbar-width:none;
+}
+.gallery-track::-webkit-scrollbar{display:none}
+.gcell{
+  position:relative;flex:0 0 calc((100% - 8px) / 3);min-width:0;overflow:hidden;
+  background:var(--surface-3);cursor:zoom-in;scroll-snap-align:start;
+}
+.gcell img{
+  width:100%;height:100%;object-fit:cover;filter:saturate(.94);
+  transition:transform 1.2s var(--ease),filter .6s var(--ease);
+}
+.gcell:hover img{transform:scale(1.025);filter:saturate(1)}
+.gallery-control{
+  position:absolute;top:50%;z-index:3;width:48px;height:48px;border-radius:50%;
+  display:grid;place-items:center;transform:translateY(-50%);color:#fff;
+  background:rgba(20,16,26,.46);border:1px solid rgba(255,255,255,.45);
+  backdrop-filter:blur(7px);transition:background .3s var(--ease),transform .3s var(--ease);
+}
+.gallery-control:hover{background:var(--plum-700);transform:translateY(-50%) scale(1.06)}
+.gallery-control--prev{left:clamp(.8rem,2.5vw,2rem)}
+.gallery-control--next{right:clamp(.8rem,2.5vw,2rem)}
+.gallery-control svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2}
+.lightbox{
+  position:fixed;inset:0;z-index:90;background:rgba(8,4,11,.94);backdrop-filter:blur(8px);
+  display:grid;place-items:center;padding:4vw;opacity:0;visibility:hidden;transition:.4s var(--ease);
+}
+.lightbox.open{opacity:1;visibility:visible}
+.lightbox img{max-width:100%;max-height:86vh;border-radius:var(--r-md);box-shadow:var(--shadow-lg)}
+.lightbox .close{position:absolute;top:1.5rem;right:1.7rem;font-size:2rem;color:rgba(255,255,255,.85);line-height:1}
+
+/* ============================ EVENTS ============================ */
+.events{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1rem,2vw,1.5rem)}
+.event{
+  background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  display:flex;flex-direction:column;transition:.55s var(--ease);box-shadow:var(--shadow-sm);
+}
+.event:hover{border-color:rgba(78,25,103,.34);transform:translateY(-5px);box-shadow:var(--shadow-md)}
+.event .ph{aspect-ratio:16/10;overflow:hidden;position:relative}
+.event .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+.event:hover .ph img{transform:scale(1.06)}
+.date-chip{
+  position:absolute;top:.9rem;left:.9rem;background:var(--plum-700);
+  border-radius:var(--r-sm);padding:.5rem .7rem;text-align:center;line-height:1;
+  box-shadow:var(--shadow-sm);
+}
+.date-chip .m{font-size:.62rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-400)}
+.date-chip .d{font-family:var(--font-display);font-size:1.5rem;font-weight:600;color:#fff;margin-top:.2rem}
+.event-body{padding:1.3rem 1.35rem 1.5rem;display:flex;flex-direction:column;gap:.6rem;flex:1}
+.event h3{font-size:1.35rem;color:var(--heading)}
+.event .meta{font-size:.76rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--plum-600)}
+.event p{font-size:.9rem;color:var(--text-soft);margin:0}
+.event-foot{margin-top:auto;padding-top:.9rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid var(--line)}
+.event .price{font-family:var(--font-display);font-size:1.2rem;font-weight:700;color:var(--heading)}
+
+/* ============================ LOCATIONS ============================ */
+.locs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1rem,2vw,1.5rem)}
+.loc{
+  border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(1.5rem,2.4vw,2rem);
+  background:#fff;box-shadow:var(--shadow-sm);
+  position:relative;overflow:hidden;transition:.55s var(--ease);
+  display:flex;flex-direction:column;
+}
+.loc::before{content:'';position:absolute;inset:0 auto auto 0;width:3px;height:100%;background:var(--grad-plum)}
+.loc:hover{border-color:rgba(78,25,103,.3);transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.loc h3{font-size:1.6rem;color:var(--heading);margin-bottom:.5rem}
+.loc .addr{font-size:.92rem;color:var(--text-soft);margin-bottom:.4rem;font-style:normal;line-height:1.55}
+.loc .addr a{border-bottom:1px solid var(--line-strong);transition:.3s var(--ease)}
+.loc .addr a:hover{color:var(--plum-700);border-bottom-color:var(--plum-700)}
+.loc .tel{display:inline-block;font-size:.88rem;color:var(--text-soft);margin-bottom:1.1rem}
+.loc .tel:hover{color:var(--plum-700)}
+.loc .note{font-size:.86rem;color:var(--text-mute);margin-bottom:1.1rem}
+.loc dl{display:grid;grid-template-columns:auto 1fr;gap:.4rem 1rem;margin:0 0 1.3rem;font-size:.86rem}
+.loc dt{color:var(--text-mute)}
+.loc dd{margin:0;color:var(--text);text-align:right}
+.loc .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.3rem}
+.loc-actions{margin-top:auto;display:flex;flex-wrap:wrap;gap:.55rem}
+.loc-actions .btn{flex:1 1 140px;justify-content:center}
+.open-now{display:inline-flex;align-items:center;gap:.45rem;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--open)}
+.open-now i{width:7px;height:7px;border-radius:50%;background:var(--open);box-shadow:0 0 0 4px rgba(30,122,68,.14);flex:0 0 auto}
+.open-now.is-closed{color:var(--text-mute)}
+.open-now.is-closed i{background:var(--text-mute);box-shadow:0 0 0 4px rgba(119,119,119,.14)}
+
+/* ============================ PRIVATE EVENTS BAND ============================ */
+.reserve{position:relative;overflow:hidden;isolation:isolate;border-block:1px solid var(--line)}
+.reserve img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:saturate(.7)}
+.reserve::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,rgba(42,13,56,.94) 0%,rgba(78,25,103,.74) 45%,rgba(12,7,16,.88) 100%)}
+.reserve-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(2rem,4vw,4rem);align-items:center}
+.reserve h2{font-size:var(--fs-h2);color:#fff;max-width:14ch}
+/* This band keeps the dark photo treatment, so its eyebrow can't use the purple-on-white default. */
+.reserve .eyebrow{color:var(--gold-400)}
+.reserve a{transition:color .3s var(--ease)}
+.reserve a:hover{color:var(--gold-200)}
+/* The band keeps a brand-purple photo treatment, so its card stays light-on-dark. */
+.pe-card{
+  background:rgba(20,10,28,.42);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.28);
+  border-radius:var(--r-lg);padding:clamp(1.5rem,2.6vw,2.2rem);box-shadow:var(--shadow-lg);
+}
+.pe-card h3{font-size:1.28rem;color:#fff;margin-bottom:1.1rem}
+.pe-list{list-style:none;margin:0 0 1.6rem;padding:0;display:grid;gap:.75rem;font-size:.92rem;color:var(--on-photo)}
+.pe-list li{display:flex;gap:.75rem;align-items:flex-start;line-height:1.55}
+.pe-list li::before{content:'';flex:0 0 auto;width:6px;height:6px;margin-top:.62rem;border-radius:50%;background:var(--gold-400)}
+.pe-card .btn{width:100%}
+.pe-card .fine{font-size:.74rem;color:rgba(239,232,242,.75);text-align:center;margin:1rem 0 0}
+
+/* ============================ FOOTER ============================ */
+.footer{background:var(--surface-1);border-top:1px solid var(--line);position:relative;z-index:2}
+.footer-preview-row{display:flex;justify-content:flex-end;padding-top:1.25rem}
+.footer--alternate{background:#fff;border-top:5px solid var(--plum-700)}
+.footer--alternate .foot-grid{grid-template-columns:1.5fr repeat(3,1fr);padding-block:2.5rem}
+.footer--alternate .foot-brand img{height:48px}
+.footer--alternate .badges{display:none}
+.footer--alternate .foot-bottom{background:var(--surface-1);margin-inline:calc(var(--pad-x) * -1);padding-inline:var(--pad-x)}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:clamp(1.6rem,3vw,3rem);padding-block:clamp(3.2rem,6vw,5rem)}
+.foot-brand img{height:64px;margin-bottom:1.1rem}
+.foot-brand p{font-size:.88rem;color:var(--text-mute);max-width:34ch}
+.foot h4{font-family:var(--font-ui);font-size:.74rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--plum-700);margin:0 0 1.1rem}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:.62rem}
+.foot a{font-size:.88rem;color:var(--text-soft);transition:.3s}
+.foot a:hover{color:var(--plum-700)}
+.foot .hours{display:grid;grid-template-columns:auto 1fr;gap:.4rem .9rem;font-size:.86rem;color:var(--text-soft)}
+.foot .hours span:nth-child(even){text-align:right;color:var(--heading);font-weight:500}
+.badges{display:flex;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap}
+.badge-store{
+  display:inline-flex;align-items:center;gap:.55rem;border:1px solid var(--line-strong);border-radius:var(--r-sm);
+  padding:.5rem .8rem;font-size:.72rem;color:var(--text-soft);background:#fff;transition:.35s var(--ease)
+}
+.badge-store:hover{border-color:var(--plum-700);color:var(--plum-700)}
+.badge-store svg{width:16px;height:16px;fill:currentColor}
+.badge-store b{display:block;font-size:.82rem;color:var(--heading);font-weight:700;line-height:1.15}
+.badge-store small{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.foot-bottom{
+  border-top:1px solid var(--line);padding-block:1.4rem;display:flex;flex-wrap:wrap;gap:1rem;
+  align-items:center;justify-content:space-between;font-size:.76rem;color:var(--text-mute)
+}
+.foot-bottom nav{display:flex;flex-wrap:wrap;gap:1.1rem}
+.pay{display:flex;gap:.45rem;align-items:center}
+.pay span{
+  border:1px solid var(--line);border-radius:4px;padding:.22rem .5rem;font-size:.6rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-mute)
+}
+.age{font-size:.72rem;color:var(--text-mute);text-align:center;padding-bottom:1.6rem}
+
+/* ============================ SCROLL REVEAL ============================ */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+
+/* ============================ SWATCH APPENDIX ============================ */
+.tokens{background:var(--surface-1);border-top:1px solid var(--line)}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:.8rem}
+.sw{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--surface-2)}
+.sw .chip{height:74px}
+.sw .meta{padding:.6rem .7rem;font-size:.68rem;letter-spacing:.06em}
+.sw .meta b{display:block;color:var(--heading);font-size:.72rem;margin-bottom:.15rem}
+.sw .meta code{color:var(--text-mute);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.type-spec{display:grid;gap:1.1rem;margin-top:2.2rem}
+.type-spec > div{border-left:2px solid var(--plum-700);padding-left:1rem}
+.type-spec small{display:block;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-mute);margin-bottom:.3rem}
+
+/* ============================ RESPONSIVE ============================ */
+@media (max-width:1080px){
+  .navlinks{display:none}
+  .header.header--alternate .nav{display:flex;min-height:78px}
+  .header.header--alternate .brand{grid-column:auto;grid-row:auto}
+  .burger{display:grid;place-items:center}
+  .offers{grid-template-columns:1fr 1fr}
+  .events{grid-template-columns:1fr 1fr}
+  .locs-grid{grid-template-columns:1fr 1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .footer--alternate .foot-grid{grid-template-columns:1fr 1fr}
+  .reserve-inner{grid-template-columns:1fr}
+}
+/* Below this the row can't hold three readable panels, so they stack and
+   every panel sits permanently open. */
+@media (max-width:900px){
+  .bar-panels{flex-direction:column;height:auto;gap:3px}
+  .bar-panel{flex:none;min-height:clamp(280px,42vh,360px)}
+  .bar-panel:hover,.bar-panel:focus-within{flex-grow:0}
+  .bar-panel:hover img,.bar-panel:focus-within img{transform:none}
+  .v-title{display:none}
+  .panel-content{opacity:1;transform:none;pointer-events:auto}
+  .bar-panel::after{background:linear-gradient(180deg,rgba(20,16,26,.20) 0%,rgba(20,16,26,.60) 50%,rgba(20,16,26,.92) 100%)}
+}
+@media (max-width:860px){
+  .split{grid-template-columns:1fr}
+  .split-media{order:-1}
+  .split-media .badge{right:12px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stat:nth-child(2){border-right:0}
+  .stat:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .steps{grid-template-columns:1fr}
+  .step:not(:last-child)::after{display:none}
+  .gallery-track{height:clamp(360px,62vh,520px)}
+  .gcell{flex-basis:calc((100% - 4px) / 2)}
+  .strip .wrap{flex-direction:column;gap:.3rem;text-align:center;padding-block:.55rem}
+}
+@media (max-width:620px){
+  .offers{grid-template-columns:1fr}
+  .events{grid-template-columns:1fr}
+  .gcell{flex-basis:100%}
+  .locs-grid{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr}
+  .brand img{height:44px}
+  .header .view-toggle span{display:none}
+  .header .view-toggle{width:42px;height:42px;padding:0;border-radius:50%}
+  .header .nav-actions>.icon-btn:not(.burger),.header .nav-actions>a.btn{display:none}
+  .footer--alternate .foot-grid{grid-template-columns:1fr}
+  .panel-cta .btn{flex:1 1 100%}
+  .strip-links{display:none}
+}
+</style>
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+
+<!-- ══════════════════ LOCATION STRIP ══════════════════ -->
+<!-- <div class="strip">
+  <div class="wrap">
+    <div>You are shopping from <b>Barrel Blends Bridgeton</b> · 12133 St. Charles Rock Rd, MO 63044</div>
+    <div class="strip-links">
+      <a href="#locations" class="pill">Change Store</a>
+      <span class="soc">
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.5V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.7l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z"/></svg></a>
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4 1.3-.1 1.7-.1 4.8-.1zm0 3.3a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm0 10.7a4.2 4.2 0 1 1 0-8.4 4.2 4.2 0 0 1 0 8.4zm6.8-11a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/></svg></a>
+      </span>
+    </div>
+  </div>
+</div> -->
+
+<!-- ══════════════════ HEADER ══════════════════ -->
+<header class="header" id="header">
+  <div class="wrap nav">
+    <a class="brand" href="#top" id="brandLink">
+      <img src="https://cityhive-production-cdn.cityhive.net/web_assets/67afce1cbee68647d3dc7c60.png?1739574812" alt="Barrel Blends" onerror="document.getElementById('brandLink').classList.add('fallback')" />
+      <span class="brand-word">Barrel Blends<small>Wine &amp; Spirits</small></span>
+    </a>
+
+    <nav class="navlinks">
+      <a href="#">Wine</a>
+      <a href="#">Spirits</a>
+      <a href="#">Beer</a>
+      <a href="#events">Tastings &amp; Events</a>
+      <a href="#">Clubs</a>
+      <a href="#">Indoor Golf</a>
+      <a href="#top" class="active">The Bar</a>
+      <a href="#">Our Deals</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="view-toggle" id="headerViewToggle" type="button" aria-pressed="false" aria-label="View alternate header">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.7"/></svg>
+        <span>View alternate header</span>
+      </button>
+      <button class="icon-btn" aria-label="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+      <button class="icon-btn" aria-label="Account"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></button>
+      <button class="icon-btn" aria-label="Cart"><svg viewBox="0 0 24 24"><path d="M6 6h15l-1.7 9.3a2 2 0 0 1-2 1.7H9.4a2 2 0 0 1-2-1.6L5 3H2"/><circle cx="10" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg><span class="dot"></span></button>
+      <a href="#locations" class="btn btn--gold btn--sm" style="margin-left:.3rem">Find a Bar</a>
+      <button class="icon-btn burger" id="burger" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <span class="eyebrow" style="margin:0">Menu</span>
+    <button id="closeDrawer" class="icon-btn" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <a href="#">Wine</a><a href="#">Spirits</a><a href="#">Beer</a>
+  <a href="#events">Tastings &amp; Events</a><a href="#">Clubs</a><a href="#">Indoor Golf</a>
+  <a href="#top">The Bar</a><a href="#locations">Locations &amp; Hours</a><a href="#">Our Deals</a>
+  <!-- [PRIVATE] -->
+  <a href="https://barrelblends.com/pages/private-events">Private Events</a>
+  <a href="#locations" class="btn btn--gold" style="margin-top:1.2rem;border-bottom:0">Find a Bar</a>
+</aside>
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section class="hero" id="top">
+  <div class="wrap hero-intro">
+    <span class="eyebrow">Valley Park · Southside · Affton</span>
+    <h1>The Bar at <em>Barrel Blends</em></h1>
+    <p class="lede">
+      Pull up a seat inside the shop for a craft cocktail, a glass of wine, a spirit pour
+      or a rotating draft. Come in for what you know, leave having found something new.
+    </p>
+    <span class="walkins">Walk-ins welcome · No reservation needed</span>
+   
+  </div>
+
+  <!-- Hover (or tab into) a panel to open it. Each one is a store finder in miniature:
+       name, address, hours and directions. -->
+  <div class="bar-panels">
+
+    <article class="bar-panel">
+      <!-- HERO PANEL - client-selected: the Valley Park bar full of guests. -->
+      <img src="https://cityhive-production-cdn.cityhive.net/media_gallery/merchant/65e3a0058e00852b846faa00/image/66df7906a3033125a420bc71.png?1725921542" alt="Guests filling the bar at Barrel Blends Valley Park" />
+      <span class="v-title">Valley Park</span>
+      <div class="panel-content">
+        <span class="open-now" data-weekday-hours="10-22" data-sunday-hours="10-21"><i></i><span>Open now</span></span>
+        <h2>Valley Park</h2>
+        <address>13645 Big Bend Rd<br>Valley Park, MO 63088</address>
+        <div class="panel-hours">Mon to Sat 10a to 10p · Sunday 10a to 9p</div>
+        <div class="panel-cta">
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=13645+Big+Bend+Rd%2C+Valley+Park%2C+MO+63088" class="btn btn--gold btn--sm">Get Directions</a>
+          <a href="tel:3149427005" class="btn btn--ghost btn--sm">(314) 942-7005</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="bar-panel">
+      <!-- [PHOTO-SS] Real Southside photo. object-position pushes the crop down so the
+           portrait panel keeps the storefront and sign rather than a band of sky. -->
+      <img src="assets/img/southside-exterior.jpg" style="object-position:center 62%" alt="The Southside Wine &amp; Spirits bottle shop and bar on Lemay Ferry Road" />
+      <span class="v-title">Southside</span>
+      <div class="panel-content">
+        <span class="open-now" data-weekday-hours="10-22" data-sunday-hours="10-21"><i></i><span>Open now</span></span>
+        <h2>Southside</h2>
+        <address>2516 Lemay Ferry Rd<br>St. Louis, MO 63125</address>
+        <div class="panel-hours">Mon to Sat 10a to 10p · Sunday 10a to 9p</div>
+        <div class="panel-cta">
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=2516+Lemay+Ferry+Rd%2C+St.+Louis%2C+MO+63125" class="btn btn--gold btn--sm">Get Directions</a>
+          <a href="tel:3149427005" class="btn btn--ghost btn--sm">(314) 942-7005</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="bar-panel">
+      <!-- [PHOTO-AF] Real Affton photo. Crop pushed down for the same reason as Southside. -->
+      <img src="assets/img/affton-exterior.jpg" style="object-position:center 62%" alt="The Barrel Blends Affton storefront on Gravois Road" />
+      <span class="v-title">Affton</span>
+      <div class="panel-content">
+        <span class="open-now" data-weekday-hours="10-22" data-sunday-hours="10-21"><i></i><span>Open now</span></span>
+        <h2>Affton</h2>
+        <address>9325 Gravois Rd<br>St. Louis, MO 63123</address>
+        <div class="panel-hours">Mon to Sat 10a to 10p · Sunday 10a to 9p</div>
+        <div class="panel-cta">
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=9325+Gravois+Rd%2C+St.+Louis%2C+MO+63123" class="btn btn--gold btn--sm">Get Directions</a>
+          <a href="tel:3149427005" class="btn btn--ghost btn--sm">(314) 942-7005</a>
+        </div>
+      </div>
+     
+    </article>
+      
+
+  </div>
+  
+</section>
+
+<!-- ══════════════════ INTRO SPLIT ══════════════════ -->
+<section class="section">
+  <div class="wrap split">
+    <div class="reveal">
+      <span class="eyebrow">The Room</span>
+      <h2 style="font-size:var(--fs-h2);margin-bottom:1.2rem">A neighborhood bar<br><span class="gold-text">inside the bottle shop.</span></h2>
+      <p class="lede">
+        Meet friends for a round of craft cocktails. Split a whiskey flight. Grab a draft while
+        you shop. Our bartenders pour what they're excited about, and they're happy to point you
+        toward the shelf when you find your new favorite.
+      </p>
+      <p class="lede">
+        No reservation, no dress code, no minimum. Just walk in. Each of our three bars keeps its
+        own rotating selection, so there's something a little different every time you visit.
+      </p>
+      <div style="display:flex;gap:.85rem;flex-wrap:wrap;margin-top:1.8rem">
+        <a href="#locations" class="btn btn--plum">Find Your Bar</a>
+        <a href="#events" class="btn btn--ghost">Tastings &amp; Events</a>
+      </div>
+    </div>
+    <div class="split-media reveal">
+      <div class="glow"></div>
+      <div class="frame">
+        <!-- ★ PHOTO NEEDED: guests seated at the bar, mid-conversation, drinks in hand.
+             Vertical crop. Real customers over staged/empty-room shots. -->
+        <img src="https://cityhive-production-cdn.cityhive.net/media_gallery/merchant/65e3a0058e00852b846faa00/image/66df78ab6a1c60262b89d0f4.png?1725921451" alt="Two drinks on the bar at Barrel Blends" />
+      </div>
+      <!-- <div class="badge">
+        <div class="k">Est. 2015</div>
+        <div class="v">Family owned<br>St. Louis, MO</div>
+      </div> -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ OFFERINGS ══════════════════ -->
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="head head--center reveal">
+      <span class="eyebrow eyebrow--center">Behind the Bar</span>
+      <h2 style="font-size:var(--fs-h2)">What We Pour</h2>
+      <p class="lede" style="margin-inline:auto">
+        Cocktails, wine by the glass, spirit pours and draft beer. Every selection rotates,
+        and every bar keeps its own - so ask what just landed.
+      </p>
+    </div>
+
+    <div class="offers">
+      <article class="offer reveal" style="--accent:var(--cocktail)">
+        <span class="tag tag--cocktail"><i></i>Cocktails</span>
+        <div class="ph">
+          <!-- ★ PHOTO NEEDED: a finished seasonal cocktail on the bar, garnish and all,
+               with guests or a bartender's hands in frame. -->
+          <img src="https://cityhive-production-cdn.cityhive.net/media_gallery/merchant/65e3a3add98c982bad17d305/image/663a5be9be6100293f61f208.png?1715100649" alt="A seasonal craft cocktail served at the bar" />
+        </div>
+        <div class="offer-body">
+          <span class="stat-line">Rotates with the seasons</span>
+          <h3>Cocktails</h3>
+          <p>Classics made properly, alongside a rotating seasonal list our bartenders build
+             around whatever they're most excited about right now.</p>
+        </div>
+      </article>
+
+      <article class="offer reveal" style="--accent:var(--wine)">
+        <span class="tag tag--wine"><i></i>Wine</span>
+        <div class="ph">
+          <!-- ★ PHOTO NEEDED: wine being poured for a guest at the bar. -->
+          <img src="https://cityhive-production-cdn.cityhive.net/media_gallery/merchant/65e3a0058e00852b846faa00/image/66df79a14a5cdf473bbe76cb.png?1725921697" alt="A bottle of wine presented at the bar" />
+        </div>
+        <div class="offer-body">
+          <span class="stat-line">Always changing</span>
+          <h3>Wine by the Glass</h3>
+          <p>Small, family-owned producers who let the fruit speak for itself. The pour list
+             turns over often, so there's usually something new open.</p>
+        </div>
+      </article>
+
+      <article class="offer reveal" style="--accent:var(--amber)">
+        <span class="tag tag--whiskey"><i></i>Spirits</span>
+        <div class="ph">
+          <!-- ★ PHOTO NEEDED: a whiskey or agave pour on the bar, guests tasting. -->
+          <img src="https://cityhive-production-cdn.cityhive.net/media_gallery/merchant/65e3a3add98c982bad17d305/image/663a5bddd51486292cb5ea4f.png?1715100637" alt="The lit back bar of whiskey and agave bottles" />
+        </div>
+        <div class="offer-body">
+          <span class="stat-line">Whiskey · Agave · Rum</span>
+          <h3>Spirit Pours</h3>
+          <p>A deep, well-travelled back bar of whiskey, agave and rum. Tell us what you
+             usually reach for and we'll point you somewhere worth trying.</p>
+        </div>
+      </article>
+
+      <article class="offer reveal" style="--accent:var(--hop)">
+        <span class="tag tag--beer"><i></i>Draft</span>
+        <div class="ph">
+          <!-- ★ PHOTO NEEDED: the tap wall mid-pour, or guests with pints in hand. -->
+          <img src="https://cityhive-production-cdn.cityhive.net/media_gallery/merchant/65e3a3add98c982bad17d305/image/663a5bd34f5043294661b5c5.png?1715100627" alt="The draft beer wall and lounge seating" />
+        </div>
+        <div class="offer-body">
+          <span class="stat-line">Handles turn over constantly</span>
+          <h3>Draft Beer</h3>
+          <p>Crisp lagers through barrel-aged stouts, with the taps rotating as fast as we
+             can find something worth putting on them.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ DISCOVERY ══════════════════ -->
+<section class="section menu-panel" id="discover">
+  <div class="wrap">
+    <div class="head head--center reveal">
+      <span class="eyebrow eyebrow--center">The Whole Point</span>
+      <h2 style="font-size:var(--fs-h2)">Discover something new<br><span class="gold-text">at our Bar.</span></h2>
+      <p class="lede" style="margin-inline:auto">
+        Each Barrel Blends bar has its own rotating selection. Explore a new wine, whiskey,
+        agave spirit or draft, talk with our team about what you enjoy, and discover something
+        new along the way.
+      </p>
+    </div>
+
+    <div class="steps reveal">
+      <div class="step">
+        <h3>Tell us what you like</h3>
+        <p>The people behind the bar are the same people who buy for the shelves. Name a bottle
+          you love, or a style you keep coming back to, and they'll take it from there.</p>
+      </div>
+      <div class="step">
+        <h3>Try something you haven't</h3>
+        <p>There's always something newly opened, freshly tapped or just landed. Order it by
+          the glass and see whether it's your kind of thing.</p>
+      </div>
+      <div class="step">
+        <h3>Find your next favorite</h3>
+        <p>When something clicks, there's a good chance it's on the shelf a few steps away -
+          so you can walk out with it the same night.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════ GALLERY ══════════════════ -->
+<section class="section">
+  <div class="wrap">
+    <div class="head reveal" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem;max-width:none">
+      <div>
+        <span class="eyebrow">Inside the Bar</span>
+        <h2 style="font-size:var(--fs-h2)">A full house is the point</h2>
+      </div>
+      <a href="https://www.instagram.com/barrelblends/" class="btn btn--ghost btn--sm">Follow @barrelblends</a>
+    </div>
+
+  </div>
+
+  <div class="gallery-carousel reveal" aria-label="Barrel Blends photo gallery">
+    <div class="gallery-track">
+      <figure class="gcell"><img src="assets/img/gallery-bar-taps.jpg" loading="lazy" alt="The tap wall, back bar and high-tops" /></figure>
+      <figure class="gcell"><img src="https://cityhive-production-cdn.cityhive.net/media_gallery/merchant/65e3a0058e00852b846faa00/image/66df78ab6a1c60262b89d0f4.png?1725921451" loading="lazy" alt="Two craft cocktails on the bar" /></figure>
+      <figure class="gcell"><img src="assets/img/gallery-lounge.jpg" loading="lazy" alt="The lounge seating area off the bar" /></figure>
+      <figure class="gcell"><img src="https://cityhive-production-cdn.cityhive.net/media_gallery/merchant/65e3a3add98c982bad17d305/image/663a5be9be6100293f61f208.png?1715100649" loading="lazy" alt="A seasonal cocktail served over ice" /></figure>
+      <figure class="gcell"><img src="assets/img/gallery-wine-wall.jpg" loading="lazy" alt="The wine shelves in the bottle shop" /></figure>
+      <figure class="gcell"><img src="https://cityhive-production-cdn.cityhive.net/media_gallery/merchant/65e3a0058e00852b846faa00/image/66df7906a3033125a420bc71.png?1725921542" loading="lazy" alt="A full house of guests at the bar" /></figure>
+    </div>
+    <button class="gallery-control gallery-control--prev" type="button" aria-label="Previous image"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
+    <button class="gallery-control gallery-control--next" type="button" aria-label="Next image"><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+  </div>
+</section>
+
+<!-- ══════════════════ EVENTS ══════════════════
+     The cards inside #eventsGrid are a FALLBACK. On barrelblends.com they are
+     replaced at page load by the live CityHive events feed - the same data
+     barrelblends.com/events renders - so this section keeps itself current
+     with no edits to this file. See the events script at the bottom.       -->
+<section class="section" id="events" style="background:var(--surface-1);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="head reveal" style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem;max-width:none">
+      <div>
+        <span class="eyebrow">Tastings &amp; Events</span>
+        <h2 style="font-size:var(--fs-h2)">What's coming up</h2>
+      </div>
+      <!-- [EVENTS] -->
+      <a href="https://barrelblends.com/events" class="btn btn--gold btn--sm">View Full Calendar</a>
+    </div>
+
+    <div class="events" id="eventsGrid" data-state="fallback">
+      <!-- ── Fallback cards: current as of 24 Aug 2026, replaced live on barrelblends.com ── -->
+      <article class="event reveal">
+        <div class="ph">
+          <img src="https://cityhive-prod-cdn.cityhive.net/media_gallery/merchant/65e3a2aa392dc12bf9e2969a/image/6a7b9e79317baac396431fe2.png?1786486393" alt="Sake Lab tasting at Barrel Blends Affton" />
+          <div class="date-chip"><div class="m">Aug</div><div class="d">26</div></div>
+        </div>
+        <div class="event-body">
+          <div class="meta">Affton · Wed, Aug 26 · 6:00 PM</div>
+          <h3>Sake Lab: For Your Sake</h3>
+          <p>A guided lineup built to answer one simple question - what kind of sake do you actually like?</p>
+          <div class="event-foot"><span class="price">$10</span><a href="https://barrelblends.com/events/sake-lab-for-your-sake-affton--6a7b9e79317baac396431fe4" class="btn btn--gold btn--sm">Get Tickets</a></div>
+        </div>
+      </article>
+
+      <article class="event reveal">
+        <div class="ph">
+          <img src="https://cityhive-prod-cdn.cityhive.net/media_gallery/merchant/65e3a3add98c982bad17d305/image/6a6bd5f5e7cc93382f7a2dae.png?1785452021" alt="Cocktail class at Barrel Blends Valley Park" />
+          <div class="date-chip"><div class="m">Aug</div><div class="d">26</div></div>
+        </div>
+        <div class="event-body">
+          <div class="meta">Valley Park · Wed, Aug 26 · 6:00 PM</div>
+          <h3>Cocktails With Clara</h3>
+          <p>A demonstration-style class walking through three cocktails and the technique behind each one.</p>
+          <div class="event-foot"><span class="price">$25</span><a href="https://barrelblends.com/events/cocktails-with-clara-6a6bd5f5e7cc93382f7a2db1" class="btn btn--gold btn--sm">Get Tickets</a></div>
+        </div>
+      </article>
+
+      <article class="event reveal">
+        <div class="ph">
+          <img src="https://cityhive-prod-cdn.cityhive.net/media_gallery/merchant/65e3a3add98c982bad17d305/image/6a7e12761ed7d034cbfc7b33.png?1786647158" alt="Rare whiskey release at Barrel Blends" />
+          <div class="date-chip"><div class="m">Aug</div><div class="d">29</div></div>
+        </div>
+        <div class="event-body">
+          <div class="meta">Valley Park · Sat, Aug 29 · 6:00 PM</div>
+          <h3>More than a Rare Whiskey Drawing</h3>
+          <p>Our Barrel Blends Gives Back drawing for a shot at this month's limited and allocated bottles.</p>
+          <div class="event-foot"><span class="price">Free</span><a href="https://barrelblends.com/events/more-than-a-rare-whiskey-drawing-valley-park--6a7e12761ed7d034cbfc7b35" class="btn btn--gold btn--sm">Event Details</a></div>
+        </div>
+      </article>
+    </div>
+
+    <p class="menu-note reveal" style="margin-top:2.4rem">
+      New tastings, classes and maker visits go up every month across all three bars.
+      <!-- [EVENTS] -->
+      <a href="https://barrelblends.com/events" style="color:var(--plum-700);font-weight:600;border-bottom:1px solid rgba(78,25,103,.4)">See the full calendar</a>.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════ LOCATIONS ══════════════════ -->
+<section class="section" id="locations">
+  <div class="wrap">
+    <div class="head head--center reveal">
+      <span class="eyebrow eyebrow--center">Find Us</span>
+      <h2 style="font-size:var(--fs-h2)">Three bars.<br>Each with its own personality.</h2>
+      <p class="lede" style="margin-inline:auto">
+        Same welcome, same curiosity, a different room and a different rotating selection at each.
+        Walk in any time we're open - no reservation needed.
+      </p>
+    </div>
+
+    <!-- ⚠ VERIFY BEFORE LAUNCH - addresses and hours below were sourced from public
+         listings, not from an internal system. Liz/ops should confirm each one, and
+         confirm whether BAR hours differ from STORE hours at any location. -->
+    <div class="locs-grid">
+
+      <!-- ─────────── VALLEY PARK ─────────── -->
+      <article class="loc reveal">
+        <span class="open-now" data-weekday-hours="10-22" data-sunday-hours="10-21"><i></i><span>Open now</span></span>
+        <h3 style="margin-top:.7rem">Valley Park</h3>
+        <address class="addr">
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=13645+Big+Bend+Rd%2C+Valley+Park%2C+MO+63088">
+            13645 Big Bend Rd<br>Valley Park, MO 63088
+          </a>
+        </address>
+        <a class="tel" href="tel:3149427005">(314) 942-7005</a>
+        <div class="chips">
+          <span class="tag tag--cocktail"><i></i>Cocktails</span>
+          <span class="tag tag--wine"><i></i>Wine by the glass</span>
+          <span class="tag tag--whiskey"><i></i>Spirit pours</span>
+        </div>
+        <dl>
+          <dt>Mon to Sat</dt><dd>10:00 AM to 10:00 PM</dd>
+          <dt>Sunday</dt><dd>10:00 AM to 9:00 PM</dd>
+        </dl>
+        <div class="loc-actions">
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=13645+Big+Bend+Rd%2C+Valley+Park%2C+MO+63088" class="btn btn--gold btn--sm">Get Directions</a>
+        </div>
+      </article>
+
+      <!-- ─────────── SOUTHSIDE ─────────── -->
+      <article class="loc reveal">
+        <span class="open-now" data-weekday-hours="10-22" data-sunday-hours="10-21"><i></i><span>Open now</span></span>
+        <h3 style="margin-top:.7rem">Southside</h3>
+        <address class="addr">
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=2516+Lemay+Ferry+Rd%2C+St.+Louis%2C+MO+63125">
+            2516 Lemay Ferry Rd<br>St. Louis, MO 63125
+          </a>
+        </address>
+        <a class="tel" href="tel:3149427005">(314) 942-7005</a>
+        <div class="chips">
+          <span class="tag tag--beer"><i></i>Rotating drafts</span>
+          <span class="tag tag--cocktail"><i></i>Cocktails</span>
+          <span class="tag tag--wine"><i></i>Wine by the glass</span>
+        </div>
+        <dl>
+          <dt>Mon to Sat</dt><dd>10:00 AM to 10:00 PM</dd>
+          <dt>Sunday</dt><dd>10:00 AM to 9:00 PM</dd>
+        </dl>
+        <div class="loc-actions">
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=2516+Lemay+Ferry+Rd%2C+St.+Louis%2C+MO+63125" class="btn btn--gold btn--sm">Get Directions</a>
+        </div>
+      </article>
+
+      <!-- ─────────── AFFTON ─────────── -->
+      <article class="loc reveal">
+        <span class="open-now" data-weekday-hours="10-22" data-sunday-hours="10-21"><i></i><span>Open now</span></span>
+        <h3 style="margin-top:.7rem">Affton</h3>
+        <address class="addr">
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=9325+Gravois+Rd%2C+St.+Louis%2C+MO+63123">
+            9325 Gravois Rd<br>St. Louis, MO 63123
+          </a>
+        </address>
+        <a class="tel" href="tel:3149427005">(314) 942-7005</a>
+        <div class="chips">
+          <span class="tag tag--whiskey"><i></i>Deep whiskey shelf</span>
+          <span class="tag tag--agave"><i></i>Agave &amp; rum</span>
+          <span class="tag tag--cocktail"><i></i>Cocktails</span>
+        </div>
+        <dl>
+          <dt>Mon to Sat</dt><dd>10:00 AM to 10:00 PM</dd>
+          <dt>Sunday</dt><dd>10:00 AM to 9:00 PM</dd>
+        </dl>
+        <div class="loc-actions">
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=9325+Gravois+Rd%2C+St.+Louis%2C+MO+63123" class="btn btn--gold btn--sm">Get Directions</a>
+        </div>
+      </article>
+    </div>
+
+    <p class="menu-note reveal">
+      What's open, tapped and pouring changes week to week at every bar. Stop in and ask -
+      that's half the fun.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════ PRIVATE & GROUP EVENTS ══════════════════ -->
+<section class="section reserve" id="private-events">
+  <!-- Background plate for this band. Decorative, so alt is empty - the heading
+       and copy over it carry the meaning. -->
+  <img src="assets/img/footer-bar.jpg" alt="" />
+  <div class="wrap reserve-inner">
+    <div class="reveal">
+      <span class="eyebrow">Groups &amp; Buyouts</span>
+      <h2>Bring the whole group</h2>
+      <p class="lede" style="color:#E4D7EE;margin-top:1.2rem">
+        Day to day we're walk-in only - grab a seat whenever you like. But for larger groups,
+        happy hours, birthdays, corporate nights and private tastings, our bar and lounge is
+        yours. Send us a request and Liz will build it around what you're after.
+      </p>
+      <div style="display:flex;gap:1.6rem;flex-wrap:wrap;margin-top:1.8rem;font-size:.86rem;color:#D9C9E6">
+        <a href="tel:3149427005">📞 (314) 942-7005</a>
+        <a href="mailto:Manager@barrelblends.com">✉ Manager@barrelblends.com</a>
+      </div>
+    </div>
+
+    <div class="pe-card reveal">
+      <h3>What we can host</h3>
+      <ul class="pe-list">
+        <li>Happy hours and team nights</li>
+        <li>Birthdays, showers and celebrations</li>
+        <li>Corporate events and client entertaining</li>
+        <li>Guided private tastings and whiskey classes</li>
+        <li>Semi-private and full bar buyouts</li>
+      </ul>
+      <!-- [PRIVATE] -->
+      <a href="https://barrelblends.com/pages/private-events" class="btn btn--gold">Plan a Private Event</a>
+      <p class="fine">Tell us the date, headcount and vibe - we'll take it from there.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════ FOOTER ══════════════════ -->
+<footer class="footer" id="footer">
+  <div class="wrap">
+    <div class="footer-preview-row">
+      <button class="view-toggle" id="footerViewToggle" type="button" aria-pressed="false" aria-label="View alternate footer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.7"/></svg>
+        <span>View alternate footer</span>
+      </button>
+    </div>
+    <div class="foot-grid">
+      <div class="foot foot-brand">
+        <img src="https://cityhive-production-cdn.cityhive.net/web_assets/67afce1cbee68647d3dc7c60.png?1739574812" alt="Barrel Blends" onerror="this.style.display='none'" />
+        <p>Cocktails, wine by the glass, whiskey, agave, rum and draft beer - a neighborhood bar inside a bottle shop, across St. Louis.</p>
+        <div class="badges">
+          <a class="badge-store" href="#"><svg viewBox="0 0 24 24"><path d="M16.5 12.5c0-2.1 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.6-1.3-.1-2.5.8-3.1.8-.6 0-1.6-.8-2.7-.7-1.4 0-2.6.8-3.3 2-1.4 2.5-.4 6.2 1 8.2.7 1 1.5 2.1 2.6 2.1 1 0 1.4-.7 2.7-.7 1.2 0 1.6.7 2.7.6 1.1 0 1.8-1 2.5-2 .8-1.1 1.1-2.2 1.1-2.3 0 0-2.1-.8-2.3-3.2zM14.4 5.9c.6-.7 1-1.7.9-2.7-.9 0-1.9.6-2.5 1.3-.5.6-1 1.6-.9 2.6 1 .1 2-.5 2.5-1.2z"/></svg><span><small>Download on the</small><b>App Store</b></span></a>
+          <a class="badge-store" href="#"><svg viewBox="0 0 24 24"><path d="M3.6 2.3c-.3.3-.5.8-.5 1.4v16.6c0 .6.2 1.1.5 1.4l.1.1 9.3-9.3v-.2L3.6 2.3zM17 15.6l-3.1-3.1v-.2L17 9.2l.1.1 3.7 2.1c1 .6 1 1.6 0 2.2L17 15.6zM16 16.6l-3.2-3.2-9.2 9.2c.3.4.9.4 1.6.1l10.8-6.1zM16 8.4L5.2 2.3c-.7-.4-1.3-.3-1.6.1l9.2 9.2L16 8.4z"/></svg><span><small>Get it on</small><b>Google Play</b></span></a>
+        </div>
+      </div>
+
+      <div class="foot">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#">Wine</a></li><li><a href="#">Spirits</a></li><li><a href="#">Beer</a></li>
+          <li><a href="#">Cigars</a></li><li><a href="#">Our Deals</a></li><li><a href="#">Bulk Ordering</a></li>
+        </ul>
+      </div>
+
+      <div class="foot">
+        <h4>Visit</h4>
+        <ul>
+          <li><a href="#top">The Bar at Barrel Blends</a></li>
+          <!-- [EVENTS] -->
+          <li><a href="https://barrelblends.com/events">Tastings &amp; Events</a></li>
+          <li><a href="#">Clubs</a></li><li><a href="#">Indoor Golf</a></li>
+          <li><a href="#locations">Locations &amp; Hours</a></li>
+          <!-- [PRIVATE] -->
+          <li><a href="https://barrelblends.com/pages/private-events">Private Events</a></li>
+        </ul>
+      </div>
+
+      <div class="foot">
+        <h4>The Bars</h4>
+        <div class="hours">
+          <span>Mon to Sat</span><span>10:00 AM to 10:00 PM</span>
+          <span>Sunday</span><span>10:00 AM to 9:00 PM</span>
+        </div>
+        <ul style="margin-top:1.1rem">
+          <li><a href="https://www.google.com/maps/dir/?api=1&amp;destination=13645+Big+Bend+Rd%2C+Valley+Park%2C+MO+63088">Valley Park · 13645 Big Bend Rd</a></li>
+          <li><a href="https://www.google.com/maps/dir/?api=1&amp;destination=2516+Lemay+Ferry+Rd%2C+St.+Louis%2C+MO+63125">Southside · 2516 Lemay Ferry Rd</a></li>
+          <li><a href="https://www.google.com/maps/dir/?api=1&amp;destination=9325+Gravois+Rd%2C+St.+Louis%2C+MO+63123">Affton · 9325 Gravois Rd</a></li>
+          <li style="margin-top:.5rem"><a href="tel:3149427005">(314) 942-7005</a></li>
+          <li><a href="mailto:Manager@barrelblends.com">Manager@barrelblends.com</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <nav>
+        <a href="#">Content Claim</a><a href="#">Sitemap</a><a href="#">Accessibility</a>
+        <a href="#">Terms</a><a href="#">Privacy</a><a href="#">Returns</a><a href="#">Shipping</a>
+      </nav>
+      <div class="pay"><span>Visa</span><span>MC</span><span>Amex</span><span>Discover</span><span>Apple Pay</span></div>
+    </div>
+    <p class="age">You must be 21+ to purchase alcohol. Please drink responsibly. © 2026 Barrel Blends.</p>
+  </div>
+</footer>
+
+<!-- ══════════════════ DESIGN TOKEN APPENDIX (delete before production) ══════════════════ -->
+<!-- <section class="section section--tight tokens" id="tokens">
+  <div class="wrap">
+    <span class="eyebrow">Appendix</span>
+    <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);margin-bottom:.6rem">Design tokens used on this page</h2>
+    <p class="lede" style="margin-bottom:2rem">Every value below is a CSS variable in <code style="color:var(--plum-700)">:root</code>. Change it once and the page re-skins.</p>
+
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#4E1967"></div><div class="meta"><b>Brand Plum</b><code>--plum-700 · #4E1967</code></div></div>
+      <div class="sw"><div class="chip" style="background:#3A1150"></div><div class="meta"><b>Plum Deep</b><code>--plum-800 · #3A1150</code></div></div>
+      <div class="sw"><div class="chip" style="background:#7B3FA0"></div><div class="meta"><b>Plum Light</b><code>--plum-500 · #7B3FA0</code></div></div>
+      <div class="sw"><div class="chip" style="background:#C9A227"></div><div class="meta"><b>Gold</b><code>--gold-500 · #C9A227</code></div></div>
+      <div class="sw"><div class="chip" style="background:#E3C567"></div><div class="meta"><b>Gold Light</b><code>--gold-400 · #E3C567</code></div></div>
+      <div class="sw"><div class="chip" style="background:#B87333"></div><div class="meta"><b>Copper</b><code>--copper · #B87333</code></div></div>
+      <div class="sw"><div class="chip" style="background:#7A1F3D"></div><div class="meta"><b>Bordeaux</b><code>--wine · #7A1F3D</code></div></div>
+      <div class="sw"><div class="chip" style="background:#A85F1E"></div><div class="meta"><b>Amber</b><code>--amber · #A85F1E</code></div></div>
+      <div class="sw"><div class="chip" style="background:#4C6638"></div><div class="meta"><b>Hop</b><code>--hop · #4C6638</code></div></div>
+      <div class="sw"><div class="chip" style="background:#356B5C"></div><div class="meta"><b>Agave</b><code>--agave · #356B5C</code></div></div>
+      <div class="sw"><div class="chip" style="background:#FFFFFF"></div><div class="meta"><b>Surface 0</b><code>--surface-0 · #FFFFFF</code></div></div>
+      <div class="sw"><div class="chip" style="background:#F6F6F6"></div><div class="meta"><b>Surface 1</b><code>--surface-1 · #F6F6F6</code></div></div>
+      <div class="sw"><div class="chip" style="background:#14101A"></div><div class="meta"><b>Heading</b><code>--heading · #14101A</code></div></div>
+      <div class="sw"><div class="chip" style="background:#4C4655"></div><div class="meta"><b>Text Soft</b><code>--text-soft · #4C4655</code></div></div>
+    </div>
+
+    <div class="type-spec">
+      <div><small>Display · Heebo 600</small><span style="font-family:var(--font-display);font-size:2.4rem">The Bar at Barrel Blends</span></div>
+      <div><small>Eyebrow · Heebo 700 · 0.32em tracking · uppercase</small><span class="eyebrow" style="margin:0">Tastings &amp; Events</span></div>
+      <div><small>Body · Heebo 400 · 1.7 line height</small><span style="color:var(--text-soft)">A thoughtfully curated selection of whiskey, wine, tequila and craft beer.</span></div>
+      <div><small>Buttons</small>
+        <span style="display:inline-flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem">
+          <span class="btn btn--gold btn--sm">Primary</span>
+          <span class="btn btn--plum btn--sm">Secondary</span>
+          <span class="btn btn--ghost btn--sm">Ghost</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<!-- ══════════════════ LOCAL SEO / STRUCTURED DATA ══════════════════
+     Helps each bar show up in Google Maps and "near me" searches, which is the
+     point of this page. Keep addresses and hours in sync with the cards above. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BarOrPub",
+      "name": "The Bar at Barrel Blends - Valley Park",
+      "url": "https://barrelblends.com/pages/default-home-page-wine-beer-spirits/bar",
+      "telephone": "+1-314-942-7005",
+      "servesCuisine": "Craft cocktails, wine, whiskey, agave, craft beer",
+      "address": {"@type":"PostalAddress","streetAddress":"13645 Big Bend Rd","addressLocality":"Valley Park","addressRegion":"MO","postalCode":"63088","addressCountry":"US"},
+      "openingHoursSpecification": [
+        {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"10:00","closes":"22:00"},
+        {"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"10:00","closes":"21:00"}
+      ]
+    },
+    {
+      "@type": "BarOrPub",
+      "name": "The Bar at Barrel Blends - Southside",
+      "url": "https://barrelblends.com/pages/default-home-page-wine-beer-spirits/bar",
+      "telephone": "+1-314-942-7005",
+      "servesCuisine": "Craft cocktails, wine, whiskey, agave, craft beer",
+      "address": {"@type":"PostalAddress","streetAddress":"2516 Lemay Ferry Rd","addressLocality":"St. Louis","addressRegion":"MO","postalCode":"63125","addressCountry":"US"},
+      "openingHoursSpecification": [
+        {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"10:00","closes":"22:00"},
+        {"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"10:00","closes":"21:00"}
+      ]
+    },
+    {
+      "@type": "BarOrPub",
+      "name": "The Bar at Barrel Blends - Affton",
+      "url": "https://barrelblends.com/pages/default-home-page-wine-beer-spirits/bar",
+      "telephone": "+1-314-942-7005",
+      "servesCuisine": "Craft cocktails, wine, whiskey, agave, craft beer",
+      "address": {"@type":"PostalAddress","streetAddress":"9325 Gravois Rd","addressLocality":"St. Louis","addressRegion":"MO","postalCode":"63123","addressCountry":"US"},
+      "openingHoursSpecification": [
+        {"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"10:00","closes":"22:00"},
+        {"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"10:00","closes":"21:00"}
+      ]
+    }
+  ]
+}
+</script>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox"><button class="close" id="lbClose" aria-label="Close">×</button><img id="lbImg" src="" alt="" /></div>
+
+<script>
+/* ---------- sticky header state ---------- */
+const header = document.getElementById('header');
+const onScroll = () => header.classList.toggle('is-stuck', window.scrollY > 30);
+onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+/* ---------- alternate header and footer previews ---------- */
+const setupViewToggle = (buttonId, target, alternateClass, alternateLabel, originalLabel) => {
+  const button = document.getElementById(buttonId);
+  button.addEventListener('click', () => {
+    const isAlternate = target.classList.toggle(alternateClass);
+    button.setAttribute('aria-pressed', String(isAlternate));
+    button.setAttribute('aria-label', isAlternate ? originalLabel : alternateLabel);
+    button.querySelector('span').textContent = isAlternate ? originalLabel : alternateLabel;
+  });
+};
+setupViewToggle('headerViewToggle', header, 'header--alternate', 'View alternate header', 'View original header');
+setupViewToggle('footerViewToggle', document.getElementById('footer'), 'footer--alternate', 'View alternate footer', 'View original footer');
+
+/* ---------- mobile drawer ---------- */
+const drawer = document.getElementById('drawer'), scrim = document.getElementById('scrim');
+const openD = () => { drawer.classList.add('open'); scrim.classList.add('open'); };
+const closeD = () => { drawer.classList.remove('open'); scrim.classList.remove('open'); };
+document.getElementById('burger').addEventListener('click', openD);
+document.getElementById('closeDrawer').addEventListener('click', closeD);
+scrim.addEventListener('click', closeD);
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeD));
+
+/* ---------- open-now badges ----------
+   Reads St. Louis local time (America/Chicago) so the badge is honest for a
+   visitor in any timezone. Hours come from each card's data attributes, so
+   changing a location's hours is a markup edit, not a code edit. */
+const stlNow = () => {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone:'America/Chicago', weekday:'short', hour:'numeric', minute:'numeric', hour12:false
+  }).formatToParts(new Date()).reduce((a,p) => (a[p.type] = p.value, a), {});
+  const days = {Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+  return { day: days[parts.weekday], minutes: (+parts.hour % 24) * 60 + (+parts.minute) };
+};
+document.querySelectorAll('.open-now').forEach(el => {
+  const range = (el.dataset[ (stlNow().day === 0) ? 'sundayHours' : 'weekdayHours' ] || '').split('-');
+  if (range.length !== 2) return;
+  const { minutes } = stlNow();
+  const isOpen = minutes >= +range[0] * 60 && minutes < +range[1] * 60;
+  el.classList.toggle('is-closed', !isOpen);
+  el.querySelector('span').textContent = isOpen ? 'Open now' : 'Closed now';
+});
+
+/* ---------- gallery lightbox ---------- */
+const lb = document.getElementById('lightbox'), lbImg = document.getElementById('lbImg');
+document.querySelectorAll('.gcell img').forEach(img => {
+  img.addEventListener('click', () => { lbImg.src = img.src; lb.classList.add('open'); });
+});
+
+/* ---------- image-only gallery carousel ---------- */
+const galleryCarousel = document.querySelector('.gallery-carousel');
+const galleryTrack = galleryCarousel.querySelector('.gallery-track');
+const gallerySlides = [...galleryTrack.children];
+let galleryIndex = 0;
+
+const showGallerySlide = index => {
+  galleryIndex = (index + gallerySlides.length) % gallerySlides.length;
+  galleryTrack.scrollTo({left:gallerySlides[galleryIndex].offsetLeft,behavior:'smooth'});
+};
+
+galleryCarousel.querySelector('.gallery-control--prev').addEventListener('click', () => showGallerySlide(galleryIndex - 1));
+galleryCarousel.querySelector('.gallery-control--next').addEventListener('click', () => showGallerySlide(galleryIndex + 1));
+showGallerySlide(0);
+
+const closeLb = () => lb.classList.remove('open');
+document.getElementById('lbClose').addEventListener('click', closeLb);
+lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeLb(); closeD(); } });
+
+/* ---------- live events feed ----------
+   Pulls the same CityHive event data that powers barrelblends.com/events, so
+   this section never needs a manual edit. Add an event in the CityHive admin
+   and it shows up here on the next page load.
+
+   The feed sends Access-Control-Allow-Origin: https://barrelblends.com, so the
+   fetch only succeeds once this page is served from that domain. Anywhere else
+   (a local file, a staging host) the fetch fails, we leave the hard-coded
+   fallback cards in #eventsGrid alone, and the section still looks finished.
+
+   To point at a different feed or show more cards, change EVENTS_FEED below -
+   nothing else in this file needs to move. */
+const EVENTS_FEED = {
+  url: 'https://api.cityhive.net/api/v1/merchants/65e3a0058e00852b846faa00/events',
+  eventPage: slug => 'https://barrelblends.com/events/' + slug,
+  cards: 3,
+  /* Only these three bars belong on this page. A store name that matches none
+     of them (Bridgeton, say) is skipped rather than shown. */
+  bars: [
+    {match: /valley\s*park/i,  label: 'Valley Park'},
+    {match: /south\s*-?\s*side/i, label: 'Southside'},
+    {match: /affton/i,         label: 'Affton'}
+  ]
+};
+
+const TZ = 'America/Chicago';           /* every time on this page is St. Louis local */
+const fmt = opts => new Intl.DateTimeFormat('en-US', {timeZone: TZ, ...opts});
+const stripTags = html => {
+  const d = document.createElement('div');
+  d.innerHTML = html || '';
+  return (d.textContent || '').replace(/\s+/g, ' ').trim();
+};
+const truncate = (text, max) =>
+  text.length <= max ? text : text.slice(0, text.lastIndexOf(' ', max)).replace(/[,;:.\-]$/, '') + '…';
+
+const barFor = storeName =>
+  (EVENTS_FEED.bars.find(b => b.match.test(storeName || '')) || {}).label;
+
+/* Two records for the same event at two stores ("[Affton & Valley Park]") arrive
+   as separate rows. Collapse them so one evening never eats two of three cards. */
+const eventKey = ev => stripTags(ev.title).replace(/\s*\[.*?\]\s*/g, '').toLowerCase() + '|' + ev.start_time.slice(0, 10);
+
+const cleanTitle = title => stripTags(title).replace(/\s*\[.*?\]\s*$/, '').trim();
+
+const priceOf = ev => {
+  const t = ev.event_tickets_config || {};
+  if (t.free_event || !(t.ticket_price > 0)) return {label: 'Free', cta: 'Event Details'};
+  const price = t.ticket_price % 1 === 0 ? t.ticket_price : t.ticket_price.toFixed(2);
+  return {label: '$' + price, cta: t.enable ? 'Get Tickets' : 'Event Details'};
+};
+
+const buildEventCard = ev => {
+  const when  = new Date(ev.start_time);
+  const bar   = barFor(ev.store_name);
+  const price = priceOf(ev);
+  const card  = document.createElement('article');
+  card.className = 'event reveal';
+  card.innerHTML = `
+    <div class="ph">
+      <img alt="">
+      <div class="date-chip"><div class="m"></div><div class="d"></div></div>
+    </div>
+    <div class="event-body">
+      <div class="meta"></div>
+      <h3></h3>
+      <p></p>
+      <div class="event-foot"><span class="price"></span><a class="btn btn--gold btn--sm"></a></div>
+    </div>`;
+
+  const img = card.querySelector('img');
+  img.src = ev.image || '';
+  img.alt = cleanTitle(ev.title) + ' at Barrel Blends ' + bar;
+  /* A dead image URL would leave a broken box; the card's gradient reads fine alone. */
+  img.addEventListener('error', () => img.remove());
+
+  card.querySelector('.date-chip .m').textContent = fmt({month: 'short'}).format(when);
+  card.querySelector('.date-chip .d').textContent = fmt({day: 'numeric'}).format(when);
+  card.querySelector('.meta').textContent = [
+    bar,
+    fmt({weekday: 'short', month: 'short', day: 'numeric'}).format(when),
+    ev.all_day ? 'All day' : fmt({hour: 'numeric', minute: '2-digit'}).format(when)
+  ].join(' · ');
+  card.querySelector('h3').textContent = cleanTitle(ev.title);
+  card.querySelector('p').textContent  = truncate(stripTags(ev.description), 120);
+  card.querySelector('.price').textContent = price.label;
+
+  const link = card.querySelector('.event-foot a');
+  link.href = EVENTS_FEED.eventPage(ev.slug);
+  link.textContent = price.cta;
+  return card;
+};
+
+const loadEvents = async () => {
+  const grid = document.getElementById('eventsGrid');
+  if (!grid) return;
+
+  const res = await fetch(EVENTS_FEED.url, {credentials: 'omit'});
+  if (!res.ok) throw new Error('events feed returned ' + res.status);
+  const all = ((await res.json()).data || {}).events || [];
+
+  const now = Date.now();
+  const seen = new Set();
+  const upcoming = all
+    .filter(ev => ev.start_time && Date.parse(ev.end_time || ev.start_time) >= now)
+    .filter(ev => barFor(ev.store_name))
+    .sort((a, b) => Date.parse(a.start_time) - Date.parse(b.start_time))
+    .filter(ev => !seen.has(eventKey(ev)) && seen.add(eventKey(ev)))
+    .slice(0, EVENTS_FEED.cards);
+
+  /* Nothing on the calendar is not a failure, but it is no reason to swap out
+     cards for an empty grid - keep the fallback rather than show a hole. */
+  if (!upcoming.length) return;
+
+  grid.replaceChildren(...upcoming.map(buildEventCard));
+  grid.dataset.state = 'live';
+  grid.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+};
+
+loadEvents().catch(err => console.info('Live events unavailable, showing fallback cards.', err));
+
+/* ---------- scroll reveal ---------- */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+}, {threshold:.12, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach((el,i) => { el.style.transitionDelay = (i % 4) * 70 + 'ms'; io.observe(el); });
+</script>
+</body>
+</html>

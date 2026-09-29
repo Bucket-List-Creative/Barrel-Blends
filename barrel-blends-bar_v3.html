@@ -10,13 +10,13 @@
      TEAM EDIT ZONE - the only things anyone should ever need to change.
      Search this file for the marker in [brackets] to find each one.
 
-     [PHOTO-SS]  Southside bar photo
-     [PHOTO-AF]  Affton bar photo
+     [PHOTO-SS]  Southside hero bar photo
+     [PHOTO-AF]  Affton hero bar photo
      [EVENTS]    Full events calendar link
      [PRIVATE]   Private & group events page link
 
      ── PHOTOGRAPHY ────────────────────────────────────────────────
-     All three location photos are real and live in assets/img/.
+     Location and bar photos are real and live in assets/img/.
      They are web-sized copies (1500-1800px, ~300KB) of the originals
      in Media/, which stays out of git - the raw files are 4-13MB each
      and the two .mp4s are ~35MB, far too heavy to serve from Pages.
@@ -25,8 +25,8 @@
        sips -Z 1800 -s format jpeg -s formatOptions 60 \
             "Media/<file>.jpg" --out "assets/img/<name>.jpg"
 
-     The hero panels crop centre-out to a tall box, so each one sets
-     object-position to keep the building rather than the sky. Adjust
+     The hero panels crop centre-out to a tall box, so each one can set
+     object-position to keep the bar rather than empty wall. Adjust
      that percentage if a replacement photo sits differently.
 
      ── EVENTS: THIS SECTION UPDATES ITSELF ────────────────────────
@@ -824,11 +824,8 @@ p{margin:0 0 1.1em}
     </article>
 
     <article class="bar-panel">
-      <!-- [PHOTO-SS] Real Southside photo. The panel is usually narrower than the
-           photo, so the crop is horizontal and centred - which lands on the sign.
-           On a very wide screen the hovered panel crops vertically instead, and
-           object-position pushes that crop down onto the building, off the sky. -->
-      <img src="assets/img/southside-exterior.jpg" style="object-position:center 62%" alt="The Southside Wine &amp; Spirits bottle shop and bar on Lemay Ferry Road" />
+      <!-- [PHOTO-SS] Real Southside bar photo. -->
+      <img src="assets/img/southside-bar.jpg" alt="The Southside Wine &amp; Spirits bar with shelves of bottles, taps and high-top seating" />
       <span class="v-title">Southside</span>
       <div class="panel-content">
         <span class="open-now" data-weekday-hours="10-22" data-sunday-hours="10-21"><i></i><span>Open now</span></span>
@@ -843,8 +840,8 @@ p{margin:0 0 1.1em}
     </article>
 
     <article class="bar-panel">
-      <!-- [PHOTO-AF] Real Affton photo. Same crop handling as Southside above. -->
-      <img src="assets/img/affton-exterior.jpg" style="object-position:center 62%" alt="The Barrel Blends Affton storefront on Gravois Road" />
+      <!-- [PHOTO-AF] Real Affton bar photo. -->
+      <img src="assets/img/affton-bar.jpg" alt="The Barrel Blends Affton bar with draft taps, shelves of spirits and high-top seating" />
       <span class="v-title">Affton</span>
       <div class="panel-content">
         <span class="open-now" data-weekday-hours="10-22" data-sunday-hours="10-21"><i></i><span>Open now</span></span>
